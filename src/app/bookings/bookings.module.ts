@@ -1,3 +1,4 @@
+import { CreateBookingComponent } from './create-booking/create-booking.component';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';

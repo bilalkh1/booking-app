@@ -17,7 +17,7 @@ import { PlaceDetailPage } from './place-detail.page';
     PlaceDetailPageRoutingModule,
     // CreateBookingComponent
   ],
-  declarations: [PlaceDetailPage],
+  declarations: [PlaceDetailPage, CreateBookingComponent],
   // entryComponents: [CreateBookingComponent]
 })
 export class PlaceDetailPageModule {}

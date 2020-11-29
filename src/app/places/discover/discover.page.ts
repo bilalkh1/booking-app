@@ -1,27 +1,45 @@
+import { AuthService } from './../../auth/auth.service';
 import { Place } from './../place.model';
 import { PlacesService } from './../places.service';
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-discover',
   templateUrl: './discover.page.html',
   styleUrls: ['./discover.page.scss'],
 })
-export class DiscoverPage implements OnInit {
+export class DiscoverPage implements OnInit, OnDestroy {
   places: Place[];
   listedLoadedPlaces: Place[];
-  constructor(private placesService: PlacesService) { }
+  private placesSub: Subscription;
+  relevantPlaces: Place[];
+  constructor(private placesService: PlacesService, private authService: AuthService) { }
 
   ngOnInit() {
-    this.places = this.placesService.getPlaces();
-    this.listedLoadedPlaces = this.places.slice(1);
+    this.placesSub = this.placesService.places.subscribe((places: Place[]) => {
+      this.places = places;
+      this.relevantPlaces = this.places;
+      this.listedLoadedPlaces = this.relevantPlaces.slice(1);
+    });
   }
 
 
   onFilterUpdate(event: CustomEvent) {
     console.log(event.detail);
+    if (event.detail.value === 'all') {
+      this.relevantPlaces = this.places;
+    }else {
+      this.relevantPlaces = this.places.filter((place) => {
+        return place.userId !== this.authService.userId;
+      });
+    }
   }
 
-
+  ngOnDestroy() {
+    if(this.placesSub) {
+      this.placesSub.unsubscribe();
+    }
+  }
 
 }
