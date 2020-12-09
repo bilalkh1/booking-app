@@ -1,14 +1,6 @@
 <div>
-  <div 
-  style="width: 100%;"
-  class="map"
-  leaflet
-  [leafletLayers]="layers"
-  [leafletOptions]="options"
-  (leafletMapReady)="onMapReady($event)"
-  myCustomDirective
-  ></div>
-  <ion-button (click)="onPickLocation()" color="primary" *ngIf="!center.hasOwnProperty(lng)">
+  <img [src]="imageUrl" alt="" *ngIf="imageUrl" (click)="onPickLocation()">
+  <ion-button (click)="onPickLocation()" color="primary" *ngIf="!imageUrl">
     <ion-icon slot="start" name="map"></ion-icon>
     <ion-label>Select Location</ion-label>
   </ion-button>

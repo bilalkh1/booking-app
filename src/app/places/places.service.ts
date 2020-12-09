@@ -1,3 +1,4 @@
+import { PlaceLocation } from './location.model';
 import { AuthService } from './../auth/auth.service';
 import { Place } from './place.model';
 import { Injectable } from '@angular/core';
@@ -13,6 +14,7 @@ interface PlaceData {
   price: number;
   title: string;
   userId: string;
+  location: PlaceLocation
 }
 
 @Injectable({
@@ -33,7 +35,7 @@ export class PlacesService {
             places.push(new Place(key, resData[key].description, 
               resData[key].title, resData[key].imageUrl, 
               resData[key].price, resData[key].availableFrom, 
-              resData[key].availableTo, resData[key].userId))
+              resData[key].availableTo, resData[key].userId, resData[key].location))
           }
         }
         return places;
@@ -64,15 +66,16 @@ export class PlacesService {
           placeData.price,
           placeData.availableFrom,
           placeData.availableTo,
-          placeData.userId
+          placeData.userId,
+          placeData.location
         );
       })
     );
   }
 
-  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date) {
+  addPlace(title: string, description: string, price: number, dateFrom: Date, dateTo: Date, location: PlaceLocation) {
     let generatedId: string;
-    const newPlace = new Place(Math.random().toString(), title, description, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSt-RMUWeK4yWGtoYhy9BwCaX5zltoG2Bpecg&usqp=CAU', price, dateFrom, dateTo, this.authService.userId);
+    const newPlace = new Place(Math.random().toString(), title, description, 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSt-RMUWeK4yWGtoYhy9BwCaX5zltoG2Bpecg&usqp=CAU', price, dateFrom, dateTo, this.authService.userId, location);
     return this.http.post<{name: string}>('https://booking-app-44184.firebaseio.com/offered-places.json', { ...newPlace, id: null })
     .pipe(
       switchMap((resData) => {
@@ -123,7 +126,8 @@ export class PlacesService {
           oldPlace.price,
           oldPlace.availableFrom,
           oldPlace.availableTo,
-          oldPlace.userId
+          oldPlace.userId,
+          oldPlace.location
         );
         return this.http.put(`https://booking-app-44184.firebaseio.com/offered-places/${placeId}.json`,
         {...updatedPlaces[updatedPlaceIndex]}

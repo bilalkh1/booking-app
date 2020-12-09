@@ -1,3 +1,4 @@
+import { PlaceLocation } from './../../location.model';
 import { LoadingController } from '@ionic/angular';
 import { PlacesService } from './../../places.service';
 import { Component, OnInit } from '@angular/core';
@@ -19,7 +20,8 @@ export class NewOfferPage implements OnInit {
       description: new FormControl(null, { updateOn: 'blur', validators: [Validators.required, Validators.maxLength(180)] }),
       price: new FormControl(null, { updateOn: 'blur', validators: [Validators.required, Validators.min(1)] }),
       dateFrom: new FormControl(null, { updateOn: 'blur', validators: Validators.required }),
-      dateTo: new FormControl(null, { updateOn: 'blur', validators: Validators.required })
+      dateTo: new FormControl(null, { updateOn: 'blur', validators: Validators.required }),
+      location: new FormControl(null, [Validators.required])
     });
   }
 
@@ -29,8 +31,10 @@ export class NewOfferPage implements OnInit {
     }
     this.loadingCtrl.create({message: 'Creating Place...'}).then((loadingEl) => {
       loadingEl.present();
+      const location: PlaceLocation = {address: this.form.value.location.display_name, lat: this.form.value.location.lat, lng: this.form.value.location.lon, staticMapImageUrl: this.form.value.location.img};
+      console.log(location);
       this.placesService.addPlace(this.form.value.title,
-        this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo))
+        this.form.value.description, +this.form.value.price, new Date(this.form.value.dateFrom), new Date(this.form.value.dateTo), location)
         .subscribe(() => {
           loadingEl.dismiss();
           this.form.reset();
@@ -38,4 +42,9 @@ export class NewOfferPage implements OnInit {
         });
     });
    }
+
+   onLocationPicked(location: PlaceLocation) {
+    this.form.patchValue({ location: location });
+   }
+
 }

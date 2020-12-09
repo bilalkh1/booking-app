@@ -8,6 +8,8 @@ import { IonicModule } from '@ionic/angular';
 import { PlaceDetailPageRoutingModule } from './place-detail-routing.module';
 
 import { PlaceDetailPage } from './place-detail.page';
+import { LeafletModule } from '@asymmetrik/ngx-leaflet';
+import { SharedModule } from 'src/app/shared/shared.module';
 
 @NgModule({
   imports: [
@@ -15,6 +17,8 @@ import { PlaceDetailPage } from './place-detail.page';
     FormsModule,
     IonicModule,
     PlaceDetailPageRoutingModule,
+    LeafletModule,
+    SharedModule
     // CreateBookingComponent
   ],
   declarations: [PlaceDetailPage, CreateBookingComponent],

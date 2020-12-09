@@ -1,6 +1,7 @@
+import { PlaceLocation } from './../../../places/location.model';
 import { MapModalComponent } from './../../map-modal/map-modal.component';
 import { ModalController } from '@ionic/angular';
-import { Component, OnInit } from '@angular/core';
+import { Component, EventEmitter, OnInit, Output } from '@angular/core';
 import * as Leaflet from 'leaflet';
 
 @Component({
@@ -9,11 +10,10 @@ import * as Leaflet from 'leaflet';
   styleUrls: ['./location-picker.component.scss'],
 })
 export class LocationPickerComponent implements OnInit {
+  @Output() locationPick = new EventEmitter<PlaceLocation>();
   map: Leaflet.Map;
   selectable = true;
-  center: any = {};
-  options = {};
-  layers = [];
+  imageUrl: string;
   constructor(private modalCtrl: ModalController) { }
 
   ngOnInit() {
@@ -24,44 +24,11 @@ export class LocationPickerComponent implements OnInit {
     this.modalCtrl.create({ component: MapModalComponent })
     .then((modalEl) => {
       modalEl.onDidDismiss().then(modalData => {
-        console.log(modalData.data);
-        this.options = {
-          layers: [
-            Leaflet.tileLayer('http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-              maxZoom: 18,
-              attribution: 'AnoPlayer map',
-            }),
-          ],
-          zoom: 12,
-          center: this.center,
-        };
-        this.center.lat = modalData.data.lat;
-        this.center.lng = modalData.data.lon;
+        this.locationPick.emit(modalData.data);
+        this.imageUrl = `https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=200&center=lonlat:${modalData.data.lon},${modalData.data.lat}&zoom=14&marker=lonlat:${modalData.data.lon},${modalData.data.lat};color:%23ff0000;size:large;text:A&apiKey=f5aa6802425f4079964f1d541b4d943d`;
       });
       modalEl.present();
     });
-  }
-
-
-  onMapReady(map: L.Map) {
-    this.map = map;
-    setTimeout(() => {
-      map.invalidateSize(true);
-      if (!this.selectable) {
-      this.map.flyTo(this.center);
-      // this.addMarker(this.center);
-      }
-
-    }, 100);
-    // this.map.flyTo({ lat: 35.7808, lng: -5.8176 });
-    // this.authService.getUserLocalisation().subscribe((data) => {
-    //   const center: LocalisationUser = { lat: data.latitude, lng: data.longitude };
-    //   this.map.flyTo(center, 14);
-    //   this.addMarker(center);
-    // }, (error) => {
-    //   console.log(error);
-    //   this.map.flyTo({ lat: 35.7808, lng: -5.8176 });
-    // });
   }
 
 }

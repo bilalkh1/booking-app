@@ -1,10 +1,11 @@
+import { MapModalComponent } from './../../../shared/map-modal/map-modal.component';
 import { AuthService } from './../../../auth/auth.service';
 import { BookingService } from './../../../bookings/booking.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from './../../places.service';
 import { Place } from './../../place.model';
 import { CreateBookingComponent } from './../../../bookings/create-booking/create-booking.component';
-import { Component, OnDestroy, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { ActionSheetController, ModalController, NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
@@ -31,6 +32,7 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
     ) { }
 
   ngOnInit() {
+    
     this.route.paramMap.subscribe((paramMap) => {
       if (!paramMap.has('placeId')) {
         return;
@@ -51,7 +53,20 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         });
       });
     });
+    
   }
+
+  onShowFullMap() {
+    this.modalController.create({ component: MapModalComponent })
+    .then((modalEl) => {
+      modalEl.present();
+    })
+  }
+
+  // ngAfterViewInit() {
+  //   this.leafletMap();
+  // }
+
 
   onBookPlace() {
     // this.navCtrl.navigateBack('/places/tabs/discover');
@@ -111,6 +126,21 @@ export class PlaceDetailPage implements OnInit, OnDestroy {
         }
     });
   }
+
+
+  // leafletMap() {
+  //   this.map = Leaflet.map('mapId').setView([28.644800, 77.216721], 5);
+  //   Leaflet.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+  //     attribution: 'edupala.com © Angular LeafLet',
+  //   }).addTo(this.map);
+
+  //   Leaflet.marker([28.6, 77]).addTo(this.map).bindPopup('Delhi').openPopup();
+  //   Leaflet.marker([34, 77]).addTo(this.map).bindPopup('Leh').openPopup();
+
+  //   antPath([[28.644800, 77.216721], [34.1526, 77.5771]],
+  //     { color: '#FF0000', weight: 5, opacity: 0.6 })
+  //     .addTo(this.map);
+  // }
 
   ngOnDestroy() {
     if (this.placeSub) {

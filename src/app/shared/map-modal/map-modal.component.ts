@@ -23,6 +23,8 @@ export class MapModalComponent implements OnInit {
   addressMap;
   @Input() selectable = true;
   @Input() center = {lat: 35.7808, lng: -5.8176};
+  @Input() closeButtonText = 'Cancel';
+  @Input() title = 'Pick Location';
   marckerImage = "https://www.nicepng.com/png/detail/95-954585_deals-promos-yellow-map-marker-png.png";
   address: string[];
   options = {
@@ -56,10 +58,9 @@ export class MapModalComponent implements OnInit {
     setTimeout(() => {
       map.invalidateSize(true);
       if (!this.selectable) {
-      this.map.flyTo(this.center);
-      this.addMarker(this.center);
+        this.map.flyTo(this.center);
+        this.addMarker(this.center);
       }
-
     }, 100);
     // this.map.flyTo({ lat: 35.7808, lng: -5.8176 });
     // this.authService.getUserLocalisation().subscribe((data) => {
@@ -94,12 +95,7 @@ export class MapModalComponent implements OnInit {
     .then((json) => {
       this.addressPicked = json.display_name;
       this.addressMap = json;
-      const pickedLocation: PlaceLocation = {
-        lat: this.addressMap.lat,
-        lng: this.addressMap.lon,
-        address: this.addressMap.display_name,
-        staticMapImageUrl: null
-      }
+      this.addressMap.img = `https://maps.geoapify.com/v1/staticmap?style=osm-carto&width=400&height=200&center=lonlat:${this.addressMap.lon},${this.addressMap.lat}&zoom=14&marker=lonlat:${this.addressMap.lon},${this.addressMap.lat};color:%23ff0000;size:large;text:A&apiKey=f5aa6802425f4079964f1d541b4d943d`
       // console.log(this.addressMap);
       this.modalCtrl.dismiss(this.addressMap);
     });
