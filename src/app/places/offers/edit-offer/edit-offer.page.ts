@@ -3,7 +3,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PlacesService } from './../../places.service';
 import { FormGroup, FormControl, Validators } from '@angular/forms';
 import { Component, OnDestroy, OnInit } from '@angular/core';
-import { NavController, LoadingController } from '@ionic/angular';
+import { NavController, LoadingController, AlertController } from '@ionic/angular';
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -13,10 +13,12 @@ import { Subscription } from 'rxjs';
 })
 export class EditOfferPage implements OnInit, OnDestroy {
   place: Place;
+  placeId: string;
   form: FormGroup;
+  isLoading = false;
   placeSub: Subscription;
   constructor(private route: ActivatedRoute, private placeService: PlacesService, private navCtrl: NavController,
-    private router: Router, private loadingCtrl: LoadingController) { }
+    private router: Router, private loadingCtrl: LoadingController, private alertController: AlertController) { }
 
   ngOnInit() {
     this.route.paramMap.subscribe((paramMap) => {
@@ -24,6 +26,8 @@ export class EditOfferPage implements OnInit, OnDestroy {
         this.navCtrl.navigateBack('/places/tabs/offers');
         return;
       }
+      this.placeId = paramMap.get('placeId');
+      this.isLoading = true;
       // this.place = this.placeService.getPlace(paramMap.get('placeId'));
       this.placeSub = this.placeService.getPlace(paramMap.get('placeId')).subscribe((place: Place) => {
         this.place = place;
@@ -32,7 +36,19 @@ export class EditOfferPage implements OnInit, OnDestroy {
           description: new FormControl(this.place.description, { updateOn: 'blur',
           validators: [Validators.required, Validators.maxLength(180)] })
         });
+        this.isLoading = false;
       });
+    },
+    (error) => {
+      this.alertController.create({ 
+        header: 'An error ocurred', 
+        message: 'Place could not be fetched. Please try again later.', 
+        buttons: [{ text: 'Okay', handler: () => {
+          this.router.navigate(['/places/tabs/offers']);
+        } }] 
+      }).then((alertEl) => {
+        alertEl.present();
+      })
     });
   }
 
